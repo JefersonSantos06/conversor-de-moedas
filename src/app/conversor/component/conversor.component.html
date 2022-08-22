@@ -1,0 +1,75 @@
+<div class="row">
+  <mat-card class="col-md">
+
+    <div  *ngIf="errorApi" class="alert alert-danger">
+      Falha ao acessar a Api
+    </div>
+    <div  *ngIf="errorApi" class="alert alert-danger">
+      {{errorMsg}}
+    </div>
+
+    <div class="pt-3">
+      <form #conversaoForm="ngForm">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Valor a ser convertido</mat-label>
+          <input matInput type="text" currencyMask [options]="{ prefix: prefix, thousands: '.', decimal: ',' }"
+                 [(ngModel)]="conversao.valor" class="text-end" name="valor" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>converter de</mat-label>
+          <mat-select [(ngModel)]="conversao.moedaDe" name="moedaDe" required (selectionChange)="alteraPrefix();">
+            <mat-option *ngFor="let moeda of moedas" [value]="moeda.sigla">
+              {{ moeda.sigla }} - {{ moeda.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>para</mat-label>
+          <mat-select [(ngModel)]="conversao.moedaPara" name="moedaPara" required>
+            <mat-option *ngFor="let moeda of moedas" [value]="moeda.sigla">
+              {{ moeda.sigla }} - {{ moeda.descricao }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="d-flex">
+          <input (click)="converter()" [disabled]="!conversaoForm.form.valid" class="btn btn-success" type="submit" value="Converter">
+        </div>
+      </form>
+    </div>
+  </mat-card>
+  <mat-card class="col-md" *ngIf="!errorApi">
+    <div class="text-center">
+      Cotação dos ultimos trinta dias
+    </div>
+
+    <div id="chart">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis"
+        [dataLabels]="chartOptions.dataLabels"
+        [grid]="chartOptions.grid"
+        [stroke]="chartOptions.stroke"
+        [title]="chartOptions.title"
+      ></apx-chart>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="p-3 pt-4">
+      <div class="d-flex justify-content-center align-items-center h-100">
+        <span>
+          Atualmente {{conversao.valor + ' ' + conversao.moedaDe}} é equivalente a
+          <strong>
+            {{ (conversaoResponse.result | currency:  '' : '')?.replace('.',',')}} {{conversao.moedaPara}}
+          </strong>
+        </span>
+      </div>
+    </div>
+  </mat-card>
+
+</div>
+
